@@ -68,7 +68,7 @@ export default function App() {
       
       // Create download link
       const link = document.createElement("a");
-      link.download = `snippet-${Date.now()}.png`;
+      link.download = `snippet.png`;
       link.href = dataUrl;
       link.click();
     } catch (error) {
