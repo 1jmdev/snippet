@@ -7,21 +7,25 @@ import { SnippetCard, type WindowStyle } from "@/components/SnippetCard";
 import { LanguageSelect } from "@/components/LanguageSelect";
 import { Button } from "@/components/ui/button";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
 } from "@/components/ui/tooltip";
 
 import { themes, defaultTheme, type ThemeConfig } from "@/lib/themes";
-import { defaultLanguage, detectLanguage, type LanguageConfig } from "@/lib/languages";
+import {
+    defaultLanguage,
+    detectLanguage,
+    type LanguageConfig,
+} from "@/lib/languages";
 
 const DEFAULT_CODE = `function greet(name: string) {
   console.log(\`Hello, \${name}!\`);
@@ -30,187 +34,206 @@ const DEFAULT_CODE = `function greet(name: string) {
 greet("World");`;
 
 const windowStyles: { id: WindowStyle; name: string }[] = [
-  { id: "macos", name: "macOS" },
-  { id: "minimal", name: "Minimal" },
+    { id: "macos", name: "macOS" },
+    { id: "minimal", name: "Minimal" },
 ];
 
 export default function App() {
-  const [code, setCode] = useState(DEFAULT_CODE);
-  const [language, setLanguage] = useState<LanguageConfig>(defaultLanguage);
-  const [theme, setTheme] = useState<ThemeConfig>(defaultTheme);
-  const [windowStyle, setWindowStyle] = useState<WindowStyle>("macos");
-  const [isExporting, setIsExporting] = useState(false);
-  const [copied, setCopied] = useState(false);
+    const [code, setCode] = useState(DEFAULT_CODE);
+    const [language, setLanguage] = useState<LanguageConfig>(defaultLanguage);
+    const [theme, setTheme] = useState<ThemeConfig>(defaultTheme);
+    const [windowStyle, setWindowStyle] = useState<WindowStyle>("macos");
+    const [isExporting, setIsExporting] = useState(false);
+    const [copied, setCopied] = useState(false);
 
-  const snippetRef = useRef<HTMLDivElement>(null);
+    const snippetRef = useRef<HTMLDivElement>(null);
 
-  // Handle paste and auto-detect language
-  const handlePaste = useCallback((pastedText: string) => {
-    const detectedLang = detectLanguage(pastedText);
-    if (detectedLang) {
-      setLanguage(detectedLang);
-    }
-  }, []);
+    // Handle paste and auto-detect language
+    const handlePaste = useCallback((pastedText: string) => {
+        const detectedLang = detectLanguage(pastedText);
+        if (detectedLang) {
+            setLanguage(detectedLang);
+        }
+    }, []);
 
-  const handleExport = useCallback(async () => {
-    if (!snippetRef.current) return;
+    const handleExport = useCallback(async () => {
+        if (!snippetRef.current) return;
 
-    setIsExporting(true);
+        setIsExporting(true);
 
-    // Wait for state to update and re-render
-    await new Promise((resolve) => setTimeout(resolve, 100));
+        // Wait for state to update and re-render
+        await new Promise((resolve) => setTimeout(resolve, 100));
 
-    try {
-      const dataUrl = await toPng(snippetRef.current, {
-        pixelRatio: 2,
-        backgroundColor: "transparent",
-      });
-      
-      // Create download link
-      const link = document.createElement("a");
-      link.download = `snippet.png`;
-      link.href = dataUrl;
-      link.click();
-    } catch (error) {
-      console.error("Export failed:", error);
-    } finally {
-      setIsExporting(false);
-    }
-  }, []);
+        try {
+            const dataUrl = await toPng(snippetRef.current, {
+                pixelRatio: 2,
+                backgroundColor: "transparent",
+            });
 
-  const handleCopyToClipboard = useCallback(async () => {
-    if (!snippetRef.current) return;
+            // Create download link
+            const link = document.createElement("a");
+            link.download = `snippet.png`;
+            link.href = dataUrl;
+            link.click();
+        } catch (error) {
+            console.error("Export failed:", error);
+        } finally {
+            setIsExporting(false);
+        }
+    }, []);
 
-    setIsExporting(true);
+    const handleCopyToClipboard = useCallback(async () => {
+        if (!snippetRef.current) return;
 
-    await new Promise((resolve) => setTimeout(resolve, 100));
+        setIsExporting(true);
 
-    try {
-      const dataUrl = await toPng(snippetRef.current, {
-        pixelRatio: 2,
-        backgroundColor: "transparent",
-      });
+        await new Promise((resolve) => setTimeout(resolve, 100));
 
-      // Convert data URL to blob
-      const response = await fetch(dataUrl);
-      const blob = await response.blob();
+        try {
+            const dataUrl = await toPng(snippetRef.current, {
+                pixelRatio: 2,
+                backgroundColor: "transparent",
+            });
 
-      // Copy to clipboard
-      await navigator.clipboard.write([
-        new ClipboardItem({ "image/png": blob }),
-      ]);
+            // Convert data URL to blob
+            const response = await fetch(dataUrl);
+            const blob = await response.blob();
 
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      console.error("Copy failed:", error);
-    } finally {
-      setIsExporting(false);
-    }
-  }, []);
+            // Copy to clipboard
+            await navigator.clipboard.write([
+                new ClipboardItem({ "image/png": blob }),
+            ]);
 
-  return (
-    <TooltipProvider>
-      <div className="min-h-screen w-full flex flex-col bg-background">
-        <header className="sticky top-0 z-50 flex-shrink-0 flex items-center justify-between px-6 py-4 border-b border-border/50 bg-background/80 backdrop-blur-md">
-          {/* Left side - Dropdowns */}
-          <div className="flex items-center gap-3">
-            {/* Language Select */}
-            <LanguageSelect value={language} onChange={setLanguage} />
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch (error) {
+            console.error("Copy failed:", error);
+        } finally {
+            setIsExporting(false);
+        }
+    }, []);
 
-            {/* Theme Select */}
-            <Select
-              value={theme.id}
-              onValueChange={(value) => {
-                const t = themes.find((th) => th.id === value);
-                if (t) setTheme(t);
-              }}
-            >
-              <SelectTrigger className="w-[160px]">
-                <SelectValue placeholder="Theme" />
-              </SelectTrigger>
-              <SelectContent>
-                {themes.map((t) => (
-                  <SelectItem key={t.id} value={t.id}>
-                    <div className="flex items-center gap-2">
-                      <div
-                        className="w-3 h-3 rounded-full border border-white/20"
-                        style={{ backgroundColor: t.background }}
-                      />
-                      {t.name}
+    return (
+        <TooltipProvider>
+            <div className="min-h-screen w-full flex flex-col bg-background">
+                <header className="sticky top-0 z-50 flex-shrink-0 flex items-center justify-between px-6 py-4 border-b border-border/50 bg-background/80 backdrop-blur-md">
+                    {/* Left side - Dropdowns */}
+                    <div className="flex items-center gap-3">
+                        {/* Language Select */}
+                        <LanguageSelect
+                            value={language}
+                            onChange={setLanguage}
+                        />
+
+                        {/* Theme Select */}
+                        <Select
+                            value={theme.id}
+                            onValueChange={(value) => {
+                                const t = themes.find((th) => th.id === value);
+                                if (t) setTheme(t);
+                            }}
+                        >
+                            <SelectTrigger className="w-[160px]">
+                                <SelectValue placeholder="Theme" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {themes.map((t) => (
+                                    <SelectItem key={t.id} value={t.id}>
+                                        <div className="flex items-center gap-2">
+                                            <div
+                                                className="w-3 h-3 rounded-full border border-white/20"
+                                                style={{
+                                                    backgroundColor:
+                                                        t.background,
+                                                }}
+                                            />
+                                            {t.name}
+                                        </div>
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+
+                        {/* Window Style Select */}
+                        <Select
+                            value={windowStyle}
+                            onValueChange={(value) =>
+                                setWindowStyle(value as WindowStyle)
+                            }
+                        >
+                            <SelectTrigger className="w-[120px]">
+                                <SelectValue placeholder="Style" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {windowStyles.map((style) => (
+                                    <SelectItem key={style.id} value={style.id}>
+                                        {style.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
 
-            {/* Window Style Select */}
-            <Select
-              value={windowStyle}
-              onValueChange={(value) => setWindowStyle(value as WindowStyle)}
-            >
-              <SelectTrigger className="w-[120px]">
-                <SelectValue placeholder="Style" />
-              </SelectTrigger>
-              <SelectContent>
-                {windowStyles.map((style) => (
-                  <SelectItem key={style.id} value={style.id}>
-                    {style.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+                    {/* Right side - Export buttons */}
+                    <div className="flex items-center gap-2">
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    variant="secondary"
+                                    size="icon"
+                                    onClick={handleCopyToClipboard}
+                                    disabled={isExporting}
+                                >
+                                    {copied ? (
+                                        <Check className="size-4" />
+                                    ) : (
+                                        <Copy className="size-4" />
+                                    )}
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                {copied ? "Copied!" : "Copy to clipboard"}
+                            </TooltipContent>
+                        </Tooltip>
 
-          {/* Right side - Export buttons */}
-          <div className="flex items-center gap-2">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="secondary"
-                  size="icon"
-                  onClick={handleCopyToClipboard}
-                  disabled={isExporting}
-                >
-                  {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>{copied ? "Copied!" : "Copy to clipboard"}</TooltipContent>
-            </Tooltip>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    onClick={handleExport}
+                                    disabled={isExporting}
+                                >
+                                    <Download className="size-4" />
+                                    Export PNG
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                Download as PNG image
+                            </TooltipContent>
+                        </Tooltip>
+                    </div>
+                </header>
 
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button onClick={handleExport} disabled={isExporting}>
-                  <Download className="size-4" />
-                  Export PNG
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Download as PNG image</TooltipContent>
-            </Tooltip>
-          </div>
-        </header>
-
-        {/* Main content - Centered snippet */}
-        <main className="flex-1 flex items-start justify-center p-8 py-20">
-          <div className="w-full max-w-3xl">
-            <SnippetCard
-              ref={snippetRef}
-              windowStyle={windowStyle}
-              background={theme.background}
-            >
-              <CodeEditor
-                code={code}
-                onChange={setCode}
-                onPaste={handlePaste}
-                language={language.id}
-                theme={theme.id}
-                isExporting={isExporting}
-                className="min-h-[100px]"
-              />
-            </SnippetCard>
-          </div>
-        </main>
-      </div>
-    </TooltipProvider>
-  );
+                {/* Main content - Centered snippet */}
+                <main className="flex-1 flex items-start justify-center p-8 py-20">
+                    <div className="w-full max-w-3xl">
+                        <SnippetCard
+                            ref={snippetRef}
+                            windowStyle={windowStyle}
+                            background={theme.background}
+                        >
+                            <CodeEditor
+                                code={code}
+                                onChange={setCode}
+                                onPaste={handlePaste}
+                                language={language.id}
+                                theme={theme.id}
+                                isExporting={isExporting}
+                                className="min-h-[100px]"
+                            />
+                        </SnippetCard>
+                    </div>
+                </main>
+            </div>
+        </TooltipProvider>
+    );
 }

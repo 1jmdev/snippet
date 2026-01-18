@@ -2,6 +2,6 @@
     "name": "snippet",
     "compatibility_date": "2026-01-18",
     "assets": {
-        "directory": "./dist"
-    }
+        "directory": "./dist",
+    },
 }

@@ -1,25 +1,25 @@
-import path from "path"
-import tailwindcss from "@tailwindcss/vite"
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import path from "path";
+import tailwindcss from "@tailwindcss/vite";
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
+    plugins: [react(), tailwindcss()],
+    resolve: {
+        alias: {
+            "@": path.resolve(__dirname, "./src"),
+        },
     },
-  },
-  build: {
-    cssCodeSplit: false, 
-    rollupOptions: {
-      output: {
-        manualChunks: undefined,
-        inlineDynamicImports: true, 
-        entryFileNames: 'assets/app.js',
-        assetFileNames: 'assets/style.[ext]', 
-      },
+    build: {
+        cssCodeSplit: false,
+        rollupOptions: {
+            output: {
+                manualChunks: undefined,
+                inlineDynamicImports: true,
+                entryFileNames: "assets/app.js",
+                assetFileNames: "assets/style.[ext]",
+            },
+        },
     },
-  },
-})
+});
