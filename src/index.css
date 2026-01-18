@@ -236,12 +236,6 @@
   box-shadow: 0 4px 12px oklch(0 0 0 / 40%);
 }
 
-/* Focus ring style */
-:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px var(--background), 0 0 0 4px oklch(0.7 0.15 250 / 50%);
-}
-
 /* Smooth transitions globally */
 * {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
