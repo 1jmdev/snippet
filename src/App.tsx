@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from "react";
 import { toPng } from "html-to-image";
-import { Download, Copy, Check } from "lucide-react";
+import { Download, Copy, Check, Github } from "lucide-react";
 
 import { CodeEditor } from "@/components/CodeEditor";
 import { SnippetCard, type WindowStyle } from "@/components/SnippetCard";
@@ -176,6 +176,30 @@ export default function App() {
 
                     {/* Right side - Export buttons */}
                     <div className="flex items-center gap-2">
+                        {/* GitHub Button */}
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="text-muted-foreground hover:text-foreground mr-2"
+                                    asChild
+                                >
+                                    <a
+                                        href="https://github.com/1jmdev/snippet"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        aria-label="Star on GitHub"
+                                    >
+                                        <Github className="size-5" />
+                                    </a>
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Star on GitHub</TooltipContent>
+                        </Tooltip>
+
+                        <div className="h-6 w-px bg-border/50 mr-2" />
+
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button
