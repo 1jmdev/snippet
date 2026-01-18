@@ -11,15 +11,4 @@ export default defineConfig({
             "@": path.resolve(__dirname, "./src"),
         },
     },
-    build: {
-        cssCodeSplit: false,
-        rollupOptions: {
-            output: {
-                manualChunks: undefined,
-                inlineDynamicImports: true,
-                entryFileNames: "assets/app.js",
-                assetFileNames: "assets/style.[ext]",
-            },
-        },
-    },
 });
