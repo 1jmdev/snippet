@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from "react";
-import { toPng } from "html-to-image";
+import { toJpeg, toPng } from "html-to-image";
 import { Download, Copy, Check, Github } from "lucide-react";
 
 import { CodeEditor } from "@/components/CodeEditor";
@@ -65,14 +65,15 @@ export default function App() {
         await new Promise((resolve) => setTimeout(resolve, 100));
 
         try {
-            const dataUrl = await toPng(snippetRef.current, {
+            const dataUrl = await toJpeg(snippetRef.current, {
                 pixelRatio: 2,
-                backgroundColor: "transparent",
+                quality: 0.95,
+                backgroundColor: theme.background,
             });
 
             // Create download link
             const link = document.createElement("a");
-            link.download = `snippet.png`;
+            link.download = `snippet.jpg`;
             link.href = dataUrl;
             link.click();
         } catch (error) {
@@ -80,7 +81,7 @@ export default function App() {
         } finally {
             setIsExporting(false);
         }
-    }, []);
+    }, [theme.background]);
 
     const handleCopyToClipboard = useCallback(async () => {
         if (!snippetRef.current) return;
@@ -92,7 +93,7 @@ export default function App() {
         try {
             const dataUrl = await toPng(snippetRef.current, {
                 pixelRatio: 2,
-                backgroundColor: "transparent",
+                backgroundColor: theme.background,
             });
 
             // Convert data URL to blob
@@ -111,7 +112,7 @@ export default function App() {
         } finally {
             setIsExporting(false);
         }
-    }, []);
+    }, [theme.background]);
 
     return (
         <TooltipProvider>
@@ -227,7 +228,7 @@ export default function App() {
                                     disabled={isExporting}
                                 >
                                     <Download className="size-4" />
-                                    Export PNG
+                                    Export JPG
                                 </Button>
                             </TooltipTrigger>
                             <TooltipContent>
